@@ -113,7 +113,7 @@ class OneWire:
         self._write_bit(value, pin_init, pin_value, Pin_OUT)
         pin_init(Pin_IN, Pin_PULL_UP)
 
-    def _write_bit(self, value, pin_init, pin_value, Pin_out):
+    def _write_bit(self, value, pin_init, pin_value, Pin_OUT):
         """
         Write a single bit - requires cached methods/attributes be passed as arguments.
         See also write_bit()
@@ -123,7 +123,7 @@ class OneWire:
         if value:
             # write 1
             i = disable_irq()
-            pin_init(Pin_out)
+            pin_init(Pin_OUT)
             pin_value(0)
             udelay(d0)
             pin_value(1)
@@ -132,7 +132,7 @@ class OneWire:
         else:
             # write 0
             i = disable_irq()
-            pin_init(Pin_out)
+            pin_init(Pin_OUT)
             pin_value(0)
             udelay(d2)
             pin_value(1)
