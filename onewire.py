@@ -109,32 +109,35 @@ class OneWire:
         Write a single bit.
         """
         pin_init, pin_value, Pin_OUT, Pin_IN, Pin_PULL_UP = self.cache
+        pin_init(Pin_IN, Pin_PULL_UP)
         self._write_bit(value, pin_init, pin_value, Pin_OUT)
+        pin_init(Pin_IN, Pin_PULL_UP)
 
-    def _write_bit(self, value, pin_init, pin_value, Pin_OUT):
+    def _write_bit(self, value, pin_init, pin_value, Pin_out):
         """
         Write a single bit - requires cached methods/attributes be passed as arguments.
         See also write_bit()
         """
         d0, d1, d2, d3 = self.write_delays
+        udelay = sleep_us
         if value:
             # write 1
             i = disable_irq()
+            pin_init(Pin_out)
             pin_value(0)
-            pin_init(Pin_OUT)
-            sleep_us(d0)
+            udelay(d0)
             pin_value(1)
             enable_irq(i)
-            sleep_us(d1)
+            udelay(d1)
         else:
             # write 0
             i = disable_irq()
+            pin_init(Pin_out)
             pin_value(0)
-            pin_init(Pin_OUT)
-            sleep_us(d2)
+            udelay(d2)
             pin_value(1)
             enable_irq(i)
-            sleep_us(d3)
+            udelay(d3)
 
     def write_byte(self, value):
         """
@@ -145,7 +148,6 @@ class OneWire:
         for i in range(8):
             self._write_bit(value & 1, pin_init, pin_value, Pin_OUT)
             value >>= 1
-        pin_init(Pin_IN, Pin_PULL_UP)
 
     def write_bytes(self, bytestring):
         """
@@ -160,16 +162,17 @@ class OneWire:
         See also read_bit()
         """
         d0, d1, d2 = self.read_delays
+        udelay = sleep_us
         pin_init(Pin_IN, Pin_PULL_UP) # TODO why do we need this?
         i = disable_irq()
-        pin_value(0)
         pin_init(Pin_OUT)
-        sleep_us(d0)
+        pin_value(0)
+        udelay(d0)
         pin_init(Pin_IN, Pin_PULL_UP)
-        sleep_us(d1)
+        udelay(d1)
         value = pin_value()
         enable_irq(i)
-        sleep_us(d2)
+        udelay(d2)
         return value
 
     def read_bit(self):
